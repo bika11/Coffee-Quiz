@@ -1,13 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import AnswerButton from './AnswerButton';
 
-function Question({ question }) {
+function Question({ question, onAnswerSelected }) {
   return (
     <div>
       <h2>{question.question_text}</h2>
       <ul>
         {question.answers.map((answer) => (
-          <li key={answer.answer_id}>{answer.answer_text}</li>
+          <li key={answer.answer_id}>
+            <AnswerButton
+              answerText={answer.answer_text}
+              answerId={answer.answer_id}
+              onAnswerSelected={onAnswerSelected}
+            />
+          </li>
         ))}
       </ul>
     </div>
@@ -28,6 +35,7 @@ Question.propTypes = {
       })
     ).isRequired,
   }).isRequired,
+  onAnswerSelected: PropTypes.func.isRequired,
 };
 
 export default Question;
