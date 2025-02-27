@@ -1,0 +1,134 @@
+﻿Software Requirements Specification: Amokka Coffee Quiz 
+System Design
+* Single-Page Application (SPA): The quiz will be a single-page application built with React.
+* Modular Components: The application will be broken down into React components (Question, Answer, Recommendation, ProgressIndicator, QuizContainer, etc.). This is crucial for maintainability and for giving clear instructions to CLi.ng.
+* Basic/Advanced Modes: Implement the two quiz modes as described in the PRD. The "Advanced" mode will offer more granular control. This distinction should be clearly presented to the user (likely with a toggle or initial selection screen).
+* Admin Panel: Supabase's built-in admin panel will be used. No custom admin panel needs to be built.
+Architecture Pattern
+* Component-Based Architecture (React): The application will be structured around reusable React components.
+* Client-Side Rendering (CSR): The quiz will be rendered and run entirely in the user's browser.
+* Serverless Backend: Interactions with the Supabase database (fetching coffee data, saving analytics) and web scraping will be handled by serverless functions (Vercel or Netlify).
+State Management
+* React Context API (with useReducer) OR Zustand:
+   * Option 1 (Simpler): Use React's built-in Context API and the useReducer hook to manage the quiz state. This is likely sufficient for the initial version.
+   * Option 2 (More Scalable): Use Zustand if the state management becomes complex.
+* State Variables:
+   * currentQuestionIndex (number): The index of the currently displayed question.
+   * answers (array): An array to store the user's selected answers. Each element could be an object: { questionId: number, answerId: number }.
+   * mode (string): "basic" or "advanced".
+   * isComplete (boolean): true when the quiz is finished and a recommendation is ready.
+   * recommendedCoffeeId (number | null): The ID of the recommended coffee (or null if no recommendation yet).
+   * secondBestCoffeeId (number | null): The ID of the second-best coffee (or null).
+   * advancedOptions (object): To store selections in advanced mode if needed.
+Data Flow
+1. Initialization:
+   * The application loads data from Supabase via a serverless function (e.g., api/getCoffees.js and api/getQuestions.js). This data includes questions, answers, and coffee information.
+   * Initial state is set (e.g., currentQuestionIndex = 0, answers = [], mode = "basic").
+2. User Interaction:
+   * The user selects an answer by clicking a button.
+   * A handleAnswerClick function (likely within the QuizContainer or a dedicated Quiz component) is called.
+   * This function updates the answers array in the application's state.
+   * The currentQuestionIndex is incremented.
+   * A smooth transition (e.g., using CSS animations or a library like react-transition-group) is triggered to display the next question.
+3. Recommendation Calculation:
+   * When currentQuestionIndex reaches the last question, isComplete is set to true.
+   * A function (either in the main component or a separate helper function, called from a serverless function, e.g. api/submitQuiz.js) calculates the recommendation. This function uses the answers array and the logic defined in the Recommendations table in Supabase. This logic will likely involve querying the Recommendations table based on the answerId values in the answers array. The score column in the Recommendations table is used to determine the best match.
+4. Recommendation Display:
+   * The recommendedCoffeeId is used to fetch the details of the recommended coffee from the Coffees table (using data already loaded or via another serverless function call).
+   * The recommended coffee's name, description, and image are displayed.
+   * The "Try Another" logic (also using the score from the Recommendations table) determines the secondBestCoffeeId.
+5. Call to Action:
+   * "Try This Coffee" button: Links to the product_page_url of the recommended coffee.
+   * "Try Another" button: Displays the second-best recommendation.
+   * "Start Over" button: Resets the state to its initial values.
+6. Analytics (Serverless Function):
+   * After a recommendation is made (or when the user starts over), a serverless function (e.g., api/submitAnalytics.js) is called to save anonymous usage data to the Analytics table in Supabase. This data only includes the questionId and answerId – no personal information.
+7. Web Scraping (Serverless Function):
+   * A separate serverless function (e.g., api/scrapeCoffees.js) is responsible for scraping the Amokka website. This function uses Cheerio (or Puppeteer/Playwright if needed).
+   * This function is triggered on a schedule (e.g., daily or weekly) – configured within Vercel or Netlify.
+   * The scraped data is used to update the Coffees table in Supabase.
+Technical Stack
+* Language: JavaScript (with React)
+* Framework: React
+* State Management: React Context API (with useReducer) or Zustand
+* Styling: Tailwind CSS (recommended) or Styled Components
+* Database: Supabase (using the Supabase JavaScript library)
+* Backend: Serverless Functions (via Vercel or Netlify)
+* Scraping: Cheerio (for basic scraping) or Puppeteer/Playwright (for more complex scraping)
+* Admin Panel: Supabase's built-in admin panel.
+Authentication Process
+* Quiz Users: No authentication required.
+* Admin Access (Supabase): Authentication is handled by Supabase for accessing the database and making changes to coffee data, questions, and recommendations.
+Route Design
+* Single Route (SPA): The quiz lives on a single route (e.g., /quiz). Internal navigation is handled by React state.
+* Product Page Links: External links to the Amokka website's product pages.
+* Serverless Function Endpoints: Serverless functions will have their own URLs (e.g., /api/getCoffees, /api/scrapeCoffees, /api/submitQuiz, /api/submitAnalytics), but these are not directly accessed by the user.
+API Design
+* Internal API (Serverless Functions):
+   * /api/getCoffees: Fetches all coffee data from Supabase.
+   * /api/getQuestions: Fetches all questions and answers from Supabase.
+   * /api/submitQuiz: Takes the user's answers as input, calculates the recommendation, and returns the recommended coffee ID(s).
+   * /api/submitAnalytics: Saves anonymous quiz usage data to Supabase.
+   * /api/scrapeCoffees: Scrapes the Amokka website and updates the Coffees table in Supabase.
+* External API (Future): Potential integration with a LLM API (Gemini or ChatGPT) for a chatbot is a future consideration, but not part of this initial implementation.
+Database Design ERD (Same as before, but reiterated for completeness):
+Table: Coffees
+----------------
+coffee_id (INT, PRIMARY KEY) - Auto-incrementing
+name (VARCHAR)
+description (TEXT)
+roast_level (VARCHAR)
+body (VARCHAR)
+acidity (VARCHAR)
+flavor_notes (TEXT)
+image_url (VARCHAR)
+product_page_url (VARCHAR)
+available (BOOLEAN)
+
+
+Table: Questions
+-----------------
+question_id (INT, PRIMARY KEY) - Auto-incrementing
+question_text (TEXT)
+mode (VARCHAR) - "basic" or "advanced"
+sort_order (INT)
+
+
+Table: Answers
+---------------
+answer_id (INT, PRIMARY KEY) - Auto-incrementing
+question_id (INT, FOREIGN KEY referencing Questions)
+answer_text (TEXT)
+sort_order (INT)
+
+
+Table: Recommendations
+-----------------------
+recommendation_id (INT, PRIMARY KEY) - Auto-incrementing
+answer_id (INT, FOREIGN KEY referencing Answers)
+coffee_id (INT, FOREIGN KEY referencing Coffees)
+score (INT)
+
+
+Table: Analytics
+-----------------------
+analytics_id (INT, PRIMARY KEY)- Auto-incrementing
+timestamp (TIMESTAMP)
+question_id (INT, FOREIGN KEY referencing Questions)
+answer_id (INT, FOREIGN KEY referencing Answers)
+-- No personally identifiable information.
+
+
+Instructions for CLi.ng (Example - Starting with the Question component):
+You'll need to provide CLi.ng with a series of detailed instructions. Here's an example for creating the Question component:
+1. "Create a new file named Question.js in the src/components directory." (Create the directory if it doesn't exist).
+2. "Inside Question.js, create a functional React component named Question."
+3. "The Question component should accept two props: questionText (a string) and answers (an array of objects)."
+4. "Each object in the answers array will have the structure: { answer_id: number, answer_text: string, sort_order: number }"
+5. "Inside the Question component, render the questionText within an h2 tag. Use Tailwind CSS classes for styling: text-2xl font-bold mb-4."
+6. "Below the h2, render a list of buttons, one for each answer in the answers array."
+7. "Each button should display the answer_text from the corresponding answer object."
+8. "Use Tailwind CSS classes for the buttons: bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-2." (Adjust colors as needed to match the Amokka brand).
+9. "Each button should have an onClick handler. For now, just have it log the answer_id to the console. We'll add the state update logic later."
+10. "Add prop type validation to the question component"
+You'll repeat this process, breaking down each component and feature into small, specific instructions. You'll also need to guide CLi.ng on setting up the state management, serverless functions, and Supabase interactions. Remember to commit frequently!

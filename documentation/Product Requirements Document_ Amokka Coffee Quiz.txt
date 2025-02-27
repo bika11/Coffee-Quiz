@@ -1,0 +1,65 @@
+﻿# Product Requirements Document: Amokka Coffee Quiz
+
+
+## 1. Elevator Pitch
+
+
+The Amokka Coffee Quiz is a fun, interactive tool designed to effortlessly guide users to their perfect Amokka coffee match. By answering four simple questions, users receive personalized coffee recommendations, simplifying the coffee selection process and enhancing the customer experience for both newcomers and existing Amokka enthusiasts. The quiz also provides valuable insights into user preferences, driving engagement and sales.
+
+
+## 2. Who is this app for?
+
+
+This quiz is designed for both existing and new Amokka customers. It aims to be approachable to all, regardless of coffee knowledge or experience level. The primary language is English, with a future option for Danish localization.
+
+
+## 3. Functional Requirements
+
+
+*   **Quiz Engine:**
+    *   The quiz consists of four static questions that guide the user towards a coffee recommendation.
+    *   The quiz logic should present a clear path to a final recommendation based on user selections.
+    * There should be a basic and a advance mode.
+*   **Coffee Recommendations:**
+    *   The quiz recommends coffees from Amokka's existing product range.
+    *   Recommendations should be based on a predefined mapping of answers to coffee profiles.
+*   **Data Management:**
+    *   **Ideal:** The application should be able to scrape the Amokka website for coffee data (names, descriptions, attributes) when instructed, to keep recommendations up-to-date.
+    *   **Alternative:** Coffee data can be stored in a Supabase table, allowing for manual updates and potential future expansion.
+*   **Analytics:**
+    *   The application should track user behavior *without* collecting personally identifiable information. Tracked metrics include:
+        *   Quiz completion rate.
+        *   Frequency of each answer choice selected.
+        *   Most frequently recommended coffees.
+*   **Integrations:**
+    *   **Future:** Integration with Supabase for data storage and potential chatbot functionality.
+    *   **Future:** Integration with a large language model (Gemini or ChatGPT) to power a customer support chatbot that can answer questions about Amokka's coffee range.
+*   **Call to Action:**
+    *   Upon receiving a recommendation, the user is presented with the following options:
+        *   **"Try This Coffee":** Redirects the user to the product page for the recommended coffee.
+        *   **"Try Another":** Offers a second-best coffee match (logic for determining second-best needs to be defined).
+        *   **"Start Over":** Resets the quiz to the first question.
+* **Maintenance**
+    * Add new coffe types as they come available
+    * Regulary check if quiz logic flows with current offer
+
+
+## 4. User Stories
+
+
+*   As a coffee drinker unsure of what to try, I want to take a quiz so that I can find a coffee that matches my taste preferences.
+*   As a regular Amokka customer, I want to quickly find a coffee I know I'll enjoy, based on my established preferences.
+*   As a new visitor to the Amokka website, I want an easy and engaging way to explore the coffee selection.
+*   As a user, I want to be able to easily restart the quiz if I change my mind or want to explore different options.
+*   As a user, I want clear and direct links to purchase the coffee I'm recommended.
+* As a user I want to answer questions that apply to all coffee types, to discover coffee fast.
+* As an advanced user I want to be able to chose between all variables to find the best fiting coffee.
+
+
+## 5. User Interface
+
+
+*   **Design:** The quiz should have a clean, modern, and visually appealing design that aligns with the Amokka brand.
+*   **Responsiveness:** The quiz *must* be fully responsive and function flawlessly on all devices (desktops, tablets, and smartphones).
+*   **Basic/Advanced Modes:** The quiz should offer a "basic" mode for quick and easy use, and a "advance mode" with more options for users and for coffee types. Details of the "advanced" options need further definition.
+*   **Accessibility:** The quiz should adhere to accessibility best practices to ensure usability for users with disabilities (e.g., sufficient color contrast, screen reader compatibility).

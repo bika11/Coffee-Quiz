@@ -1,0 +1,49 @@
+﻿User Interface Design Document: Amokka Coffee Quiz
+Layout Structure
+* Single-Column Layout: The quiz will use a single-column layout for optimal display on all devices (desktop, tablet, mobile).
+* Vertical Flow: Questions and answer choices will be presented in a clear, top-to-bottom flow.
+* Minimal Scrolling: Each question "page" will be designed to minimize the need for scrolling, especially on mobile.
+* Progress Indicator: A clear progress indicator (e.g., "Step 1 of 4") will be displayed prominently at the top of the screen.
+Core Components
+* Question Title: A large, clear heading displaying the current question.
+* Answer Buttons: Prominent, rectangular buttons representing the answer choices. These will be large enough for easy tapping on touchscreens.
+* "Start Over" Button: A visually de-emphasized text link (e.g., "Start Over") will be present, likely below the answer buttons, to allow users to restart the quiz.
+* Recommendation Display: A dedicated area to display the recommended coffee. This will include:
+   * Coffee Name (prominent)
+   * Coffee Description (brief)
+   * "Try This Coffee" button (primary CTA, links to product page)
+   * "Try Another" button (secondary CTA)
+   * "Start Over" is also here
+* Advanced Options (Conditional): If the user is not satisfied with the initial recommendations, a section will appear (triggered by a button like "Not quite right? Refine your results"). This section will contain:
+   * Sliders or dropdowns for more granular control over coffee attributes (e.g., Roast Level, Body). Specific attributes TBD based on Amokka's coffee data.
+   * "See Updated Recommendation" button.
+Interaction Patterns
+* Button Selection: Clicking/tapping an answer button will:
+   * Provide immediate visual feedback (e.g., button background color changes slightly, a checkmark appears).
+   * Trigger a smooth transition to the next question.
+* Transitions: Transitions between questions will be quick and smooth, using subtle animations (e.g., a fade-in or slide-in effect).
+* Advanced Options Interaction: Sliders (if used) will have clear visual indicators of the selected value. Dropdowns will be standard and easily usable.
+* Navigation: The only navigation is proceeding to product pages.
+Visual Design Elements & Color Scheme
+* Overall Aesthetic: Clean, minimalist, and "Nordic," in line with the provided screenshot and Amokka's branding.
+* Background: Predominantly white or a very light off-white.
+* Primary Color: A muted color from the Amokka brand palette (likely a soft grey, beige, or similar) will be used for buttons and other key interactive elements. Specific color to be determined from Amokka's brand guidelines.
+* Secondary Color: A slightly darker shade of the primary color, or a complementary color, may be used for hover states and selected states.
+* Imagery: High-quality product photography may be used subtly in the background, but heavily desaturated to avoid distraction. The focus is on the text and answer choices. If used, it will be consistent with the "Nordic" aesthetic.
+* Call to Action Buttons: "Try This Coffee" will be the most visually prominent button on the recommendation page, using a distinct color (potentially a brighter color from the Amokka palette, but still harmonious with the overall design). "Try Another" will be less prominent, but still clearly visible.
+Mobile, Web App, Desktop Considerations
+* Fully Responsive: The design will be fully responsive, adapting seamlessly to different screen sizes and orientations.
+* Touch-Friendly: All interactive elements (buttons, sliders, etc.) will be large enough and spaced appropriately for easy use on touchscreens.
+* Mobile-First Approach: The design will be developed with a mobile-first approach, ensuring optimal performance and usability on smaller screens.
+* Web App: Will run in standard web browsers
+* Desktop: The layout might be centered with a max width to avoid looking stretched
+Typography
+* Primary Font: A clean, sans-serif font that aligns with the Amokka brand. Specific font to be determined from Amokka's brand guidelines. Emphasis on readability.
+* Font Sizes: Font sizes will be chosen for optimal readability on different screen sizes. Headings will be clearly distinct from body text.
+* Font Weights: A limited number of font weights (e.g., regular, bold) will be used to maintain visual consistency.
+Accessibility
+* Color Contrast: Sufficient color contrast between text and background will be ensured, meeting WCAG (Web Content Accessibility Guidelines) standards.
+* Screen Reader Compatibility: The quiz will be structured semantically (using appropriate HTML tags) to ensure compatibility with screen readers.
+* Keyboard Navigation: The quiz will be fully navigable using a keyboard alone.
+* ALT Text: All images (if used) will have descriptive ALT text for screen readers.
+This document provides a detailed description of the Amokka Coffee Quiz user interface. It serves as a guide for development and ensures a consistent and user-friendly experience.
