@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import cheerio from 'cheerio';
+import * as cheerio from 'cheerio';
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_ANON_KEY;
