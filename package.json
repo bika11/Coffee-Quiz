@@ -1,4 +1,8 @@
 {
+  "type": "module",
+  "scripts": {
+    "dev": "next dev"
+  },
   "dependencies": {
     "autoprefixer": "^10.4.20",
     "cheerio": "^1.0.0",
