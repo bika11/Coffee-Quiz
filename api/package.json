@@ -1,0 +1,11 @@
+{
+  "name": "api-functions",
+  "version": "1.0.0",
+  "description": "Serverless functions for the Amokka Coffee Quiz",
+  "main": "index.js",
+  "type": "module",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.15.8",
+    "cheerio": "^1.0.0"
+  }
+}
