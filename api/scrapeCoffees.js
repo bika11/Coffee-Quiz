@@ -1,52 +1,53 @@
-import { createClient } from '@supabase/supabase-js';
+// import { createClient } from '@supabase/supabase-js';
 import * as cheerio from 'cheerio';
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY;
+// const supabaseUrl = process.env.SUPABASE_URL; //Not needed for local testing
+// const supabaseKey = process.env.SUPABASE_ANON_KEY; //Not needed for local testing
+// const supabase = createClient(supabaseUrl, supabaseKey); //Not needed for local testing
 
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-export default async function handler(req, res) {
+async function scrapeAmokkaCoffees() {
   try {
-    const response = await fetch('https://amokka.com/en/coffee/');
+    const response = await fetch('https://amokka.com/en/products/colombia-luzmila-gonzalez');
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const html = await response.text();
     const $ = cheerio.load(html);
 
-    const coffees = [];
-    $('.product-grid-item').each((i, el) => {
-      const name = $(el).find('.product-title').text().trim();
-      const description = $(el).find('.product-description').text().trim();
-      const imageUrl = $(el).find('.product-image img').attr('src');
-      const productPageUrl = $(el).find('a').attr('href');
+    const name = $('h1.product-title.h3').text().trim();
+    const description = $('div.prose').text().trim();
+    const imageUrl = $('img[src]').attr('src');
 
-      coffees.push({
-        name,
-        description,
-        imageUrl,
-        productPageUrl,
-      });
-    });
+    const coffee = {
+      name,
+      description,
+      imageUrl,
+      productPageUrl: 'https://amokka.com/en/products/colombia-luzmila-gonzalez',
+    };
 
-    // Basic error handling - improve this
-    if (!coffees) {
-      throw new Error('No coffees found');
-    }
+    console.log(coffee); // Log the scraped data
 
-    // Upload to supabase
-    const { data, error } = await supabase
-      .from('Coffees')
-      .upsert(coffees, { onConflict: 'name' });
+    // // Basic error handling - improve this
+    // if (!coffees.length) {
+    //     throw new Error('No coffees found');
+    //   }
+    //   // Upload to supabase
+    //   const { data, error } = await supabase
+    //     .from('Coffees')
+    //     .upsert(coffees, { onConflict: 'name' });
 
-    if (error) {
-      throw error;
-    }
+    //   if (error) {
+    //     throw error;
+    //   }
+    //console.log('Coffees scraped and uploaded successfully');
 
-    res.status(200).json({ message: 'Coffees scraped and uploaded successfully' });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to scrape coffees' });
+    console.error("Scraping Error:", error); // Improved error logging
   }
 }
+
+scrapeAmokkaCoffees(); // Call the scraping function
+
+// export default async function handler(req, res) { //Commented out
+//   // ... (Original handler code - now inside scrapeAmokkaCoffees) ...
+// }
