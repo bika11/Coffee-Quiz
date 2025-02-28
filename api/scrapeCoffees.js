@@ -1,31 +1,51 @@
-// import { createClient } from '@supabase/supabase-js';
+// api/scrapeCoffees.js
 import * as cheerio from 'cheerio';
-
-// const supabaseUrl = process.env.SUPABASE_URL; //Not needed for local testing
-// const supabaseKey = process.env.SUPABASE_ANON_KEY; //Not needed for local testing
-// const supabase = createClient(supabaseUrl, supabaseKey); //Not needed for local testing
 
 async function scrapeAmokkaCoffees() {
   try {
-    const response = await fetch('https://amokka.com/en/products/colombia-luzmila-gonzalez');
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    const collectionResponse = await fetch('https://amokka.com/en/collections/coffee');
+    if (!collectionResponse.ok) {
+      throw new Error(`HTTP error! status: ${collectionResponse.status}`);
     }
-    const html = await response.text();
-    const $ = cheerio.load(html);
+    const collectionHtml = await collectionResponse.text();
+    const $collection = cheerio.load(collectionHtml);
 
-    const name = $('h1.product-title.h3').text().trim();
-    const description = $('div.prose').text().trim();
-    const imageUrl = $('img[src]').attr('src');
+    const coffeeLinks = [];
+    $collection('a[href^="/en/products/"]').each((i, el) => {
+      const relativeUrl = $collection(el).attr('href');
+      const fullUrl = new URL(relativeUrl, 'https://amokka.com').href; // Construct absolute URL
+      coffeeLinks.push(fullUrl);
+    });
 
-    const coffee = {
-      name,
-      description,
-      imageUrl,
-      productPageUrl: 'https://amokka.com/en/products/colombia-luzmila-gonzalez',
-    };
+    const coffees = [];
+    for (const coffeeUrl of coffeeLinks) {
+      const response = await fetch(coffeeUrl);
+      if (!response.ok) {
+        console.error(`Failed to fetch ${coffeeUrl}: ${response.status}`); // Log individual errors
+        continue; // Skip to the next coffee on error
+      }
+      const html = await response.text();
+      const $ = cheerio.load(html);
 
-    console.log(coffee); // Log the scraped data
+      const name = $('h1.product-title.h3').text().trim();
+      const description = $('div.product-info__block-item[data-block-type="description"] div.prose').text().trim();
+        // Use a more robust selector for description
+      let imageUrl = $(
+  "div.product-gallery__image img"
+).attr("src"); // Get the src attribute
+if (imageUrl && !imageUrl.startsWith("https:")) {
+  imageUrl = "https:" + imageUrl; // Prepend https:
+}
+
+      coffees.push({
+        name,
+        description,
+        imageUrl,
+        productPageUrl: coffeeUrl, // Store the URL
+      });
+    }
+
+    console.log(coffees); // Log the scraped data
 
     // // Basic error handling - improve this
     // if (!coffees.length) {
@@ -34,7 +54,7 @@ async function scrapeAmokkaCoffees() {
     //   // Upload to supabase
     //   const { data, error } = await supabase
     //     .from('Coffees')
-    //     .upsert(coffees, { onConflict: 'name' });
+    //     .upsert(coffees, { onConflict: 'name' }); // Consider a better unique constraint
 
     //   if (error) {
     //     throw error;
@@ -46,8 +66,4 @@ async function scrapeAmokkaCoffees() {
   }
 }
 
-scrapeAmokkaCoffees(); // Call the scraping function
-
-// export default async function handler(req, res) { //Commented out
-//   // ... (Original handler code - now inside scrapeAmokkaCoffees) ...
-// }
+scrapeAmokkaCoffees();
